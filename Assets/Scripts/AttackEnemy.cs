@@ -58,7 +58,7 @@ public class AttackEnemy : MonoBehaviour
     {
         yield return new WaitForSeconds(1); 
         animator.SetBool("Attack", false);
-        yield return new WaitForSeconds(2);
+        yield return new WaitForSeconds(1);
         PermissionAttack = true;
     }
     private void SecondAttackEnemy()
