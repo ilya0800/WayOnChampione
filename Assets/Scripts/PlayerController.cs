@@ -1,7 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour
 {
@@ -10,7 +7,6 @@ public class PlayerController : MonoBehaviour
     private Animator anim;
     private float PlayerMove;
     [SerializeField] float speed;
-    private bool Permission = true;
   
     void Start()
     {

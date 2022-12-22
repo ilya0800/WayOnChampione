@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class HpBarAndStaminaPlayer : MonoBehaviour, IHpBarAndStamina
+public class HpBarAndStaminaPlayer : MonoBehaviour, IHpBarAndStaminaForPlayer
 {
     public static HpBarAndStaminaPlayer instance = null;
     float time = 0f;
@@ -50,9 +50,15 @@ public class HpBarAndStaminaPlayer : MonoBehaviour, IHpBarAndStamina
             PermissionUseStamin = false;    
     }
 
-    public void HpDamage()
+    public void HpDamageDefultAttack()
     {
-        Hp -= 10;
+        Hp -= 20;
+        FullHp.fillAmount = Hp * 0.01f;
+    }
+
+    public void HpDamageSecondAttack()
+    {
+        Hp -= 40;
         FullHp.fillAmount = Hp * 0.01f;
     }
 

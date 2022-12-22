@@ -3,22 +3,27 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class EnemyHpBarAndStamina : MonoBehaviour, IHpBarAndStamina
+public class EnemyHpBarAndStamina : MonoBehaviour, IHpBarAndStaminaForEnemy
 {
     public static EnemyHpBarAndStamina instance = null;
-    float time = 0f;
-    [Header("Hp")]
-    float CurrentHp;
     public float Hp = 100;
+    public bool PermissionUseStamin = true;
+    public bool ActivelyStateEnemy = false;
+    public bool PlayTimeLine = false;
+    private float time = 0f;
+    [SerializeField] private float CurrentStamin;
+    private float CurrentHp;
+    private float FullStamina = 100;
+    
+    [Header("Hp")]
     [SerializeField] Image FullHpEnemy;
     [Header("Stamina")]
     [SerializeField] Image EnemyStamina;
-    float FullStamina = 100;
-    private float CurrentStamin;
-    public bool PermissionUseStamin = true;
+    Animator animator;
 
     private void Start()
     {
+        animator = GetComponent<Animator>();
         CurrentStamin = FullStamina;
         CurrentHp = Hp;
         if (instance == null)
@@ -34,15 +39,31 @@ public class EnemyHpBarAndStamina : MonoBehaviour, IHpBarAndStamina
     {
         GetStamin();
         CheckStamina();
-      //  Debug.Log(CurrentStamin);
+        CheckHp();
     }
 
     public void CheckHp()
     {
-        if (Hp <= 0)
+        if (Hp <= 80)
         {
-            Dead();
+            ActivelyStateEnemy = true;
+            ActiveAnimEnemyStateSecond();
+            ActiveTimeLine();
+        }   
+    }
+
+    private void ActiveAnimEnemyStateSecond()
+    {
+        if (ActivelyStateEnemy)
+        {
+            animator.SetBool("IdleStateSecond", true);
+            animator.SetBool("Attack", false);
         }
+    }
+
+    private void ActiveTimeLine()
+    {
+        PlayTimeLine = true;
     }
 
     public void CheckStamina()
@@ -53,17 +74,36 @@ public class EnemyHpBarAndStamina : MonoBehaviour, IHpBarAndStamina
             PermissionUseStamin = true;
     }
 
-    public void HpDamage()
+    public void HpDamageOfDefultAttack()
     {
-        Hp -= 10;
+        Hp -= 15;
+        FullHpEnemy.fillAmount = Hp * 0.01f;
+    }
+
+    public void HpDamageOfSecondAttack()
+    {
+        Hp -= 40;
         FullHpEnemy.fillAmount = Hp * 0.01f;
     }
 
     public void StealStaminDefoultAttack()
     {
-        CurrentStamin -= 20;
-        EnemyStamina.fillAmount = FullStamina * 0.01f;
+        CurrentStamin -= 15;
+        EnemyStamina.fillAmount = CurrentStamin * 0.01f;
     }
+
+    public void StealStaminActivShelder()
+    {
+        CurrentStamin -= 10;
+       EnemyStamina.fillAmount = CurrentStamin * 0.01f;
+    }
+
+    public void StealStaminSecondAttack()
+    {
+        CurrentStamin -= 25;
+        EnemyStamina.fillAmount = CurrentStamin * 0.01f;
+    }
+
     public void Dead()
     {
 
@@ -89,9 +129,5 @@ public class EnemyHpBarAndStamina : MonoBehaviour, IHpBarAndStamina
         EnemyStamina.fillAmount = CurrentStamin * 0.01f;
     }
 
-    public void StealStaminActivShelder()
-    {
-        FullStamina -= 10;
-        EnemyStamina.fillAmount = CurrentStamin * 0.01f;
-    }
+    
 }

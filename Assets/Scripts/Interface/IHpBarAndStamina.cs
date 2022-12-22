@@ -2,9 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public interface IHpBarAndStamina
+public interface IHpBarAndStaminaForEnemy
 {      
-    void HpDamage();
+    void HpDamageOfDefultAttack();
     void StealStaminDefoultAttack();
     void StealStaminActivShelder();
     void CheckStamina();

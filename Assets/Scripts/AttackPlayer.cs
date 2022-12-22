@@ -22,7 +22,7 @@ public class AttackPlayer : MonoBehaviour
     {
         if (collision.collider.CompareTag("Enemy")) 
         {   
-            EnemyHpBarAndStamina.instance.HpDamage();
+            EnemyHpBarAndStamina.instance.HpDamageOfDefultAttack();
         }
     }
 
