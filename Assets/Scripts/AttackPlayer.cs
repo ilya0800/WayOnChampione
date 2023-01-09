@@ -7,9 +7,12 @@ public class AttackPlayer : MonoBehaviour
 {
     private bool CdDefultAttack = true;
     private Animator anim;
-    
+    [SerializeField] AudioSource[] audio = new AudioSource[2];
+    Collider2D[] Collider;
+    RaycastHit2D raycast;
+
     private void Start()
-    {
+    {    
         anim = GetComponentInParent<Animator>();
     }
   
@@ -20,9 +23,14 @@ public class AttackPlayer : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.collider.CompareTag("Enemy")) 
-        {   
+        if (collision.collider.CompareTag("Enemy"))
+        {
             EnemyHpBarAndStamina.instance.HpDamageOfDefultAttack();
+            audio[0].Play();
+        }
+        else if (!collision.gameObject.CompareTag("Enemy"))
+        {
+            audio[1].Play();
         }
     }
 
@@ -34,6 +42,7 @@ public class AttackPlayer : MonoBehaviour
             anim.SetBool("Attack", true);
             anim.SetBool("Shelder", false);
             StartCoroutine(CheckPermissionAttack());
+            FindEnemy();
         }
     }
 
@@ -44,5 +53,13 @@ public class AttackPlayer : MonoBehaviour
         anim.SetBool("Attack", false);
         yield return new WaitForSeconds(1);
         CdDefultAttack = true;
+    }
+    
+    private void FindEnemy()
+    {
+        raycast = Physics2D.Raycast(gameObject.transform.position, Vector2.right, 3f);
+        if (raycast.collider == null)
+            audio[1].Play();
+        Debug.Log("2");
     }
 }

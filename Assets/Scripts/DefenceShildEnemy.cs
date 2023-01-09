@@ -10,10 +10,9 @@ public class DefenceShildEnemy : MonoBehaviour, IDefenceShild
     private bool CdRandomNumber = true;
     const int ActivationNumber = 3;
     const int deactivationActiveNumber = 2;
-    
     [SerializeField] GameObject Player;
+    [SerializeField] AudioSource Audio;
         
-
     void Start()
     {
         animator = GetComponentInParent<Animator>();
@@ -32,6 +31,7 @@ public class DefenceShildEnemy : MonoBehaviour, IDefenceShild
        {
             RandomNumber = deactivationActiveNumber;
             animator.SetBool("Shelder", true);
+            Audio.Play();
             StealStamin();
             StartCoroutine(CoolDownAnimation());
             StartCoroutine(CoolDownColliderShild());

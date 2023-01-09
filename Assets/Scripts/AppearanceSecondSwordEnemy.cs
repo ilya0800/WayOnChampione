@@ -5,18 +5,9 @@ using UnityEngine.UI;
 
 public class AppearanceSecondSwordEnemy : MonoBehaviour
 {
-    Animation animation;
-    Animator animator;
     [SerializeField] GameObject PosForFallSword;
     [SerializeField] float SpeedFallSword;
 
-    void Start()
-    {
-        animation = GetComponent<Animation>();
-        animator = GetComponent<Animator>();
-    }
-
-    // Update is called once per frame
     void Update()
     {
         FallSwordInPosition();

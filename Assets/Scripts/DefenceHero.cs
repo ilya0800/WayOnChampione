@@ -6,6 +6,7 @@ public class DefenceHero : MonoBehaviour
 {
     private Animator anim;
     private bool PermissionActiveShelder = true;
+    [SerializeField] AudioSource audioSource;
 
     void Start()
     {
@@ -21,7 +22,16 @@ public class DefenceHero : MonoBehaviour
             gameObject.GetComponentInParent<Collider2D>().enabled = true;
         }
     }
-   
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.gameObject.CompareTag("Enemy"))
+        {
+            audioSource.Play();
+            Debug.Log("audi");
+        }
+    }
+
     private void ActiveShelder()
     {
         if (Input.GetMouseButton(1) && PermissionActiveShelder && HpBarAndStaminaPlayer.instance.PermissionUseStamin)

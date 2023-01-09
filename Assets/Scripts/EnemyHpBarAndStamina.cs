@@ -19,7 +19,8 @@ public class EnemyHpBarAndStamina : MonoBehaviour, IHpBarAndStaminaForEnemy
     [SerializeField] Image FullHpEnemy;
     [Header("Stamina")]
     [SerializeField] Image EnemyStamina;
-    Animator animator;
+    private Animator animator;
+    [SerializeField] AudioSource[] Audio; 
 
     private void Start()
     {
@@ -35,6 +36,7 @@ public class EnemyHpBarAndStamina : MonoBehaviour, IHpBarAndStaminaForEnemy
             Destroy(gameObject);
         }
     }
+
     private void Update()
     {
         GetStamin();
@@ -50,6 +52,10 @@ public class EnemyHpBarAndStamina : MonoBehaviour, IHpBarAndStaminaForEnemy
             ActiveAnimEnemyStateSecond();
             ActiveTimeLine();
         }   
+        if(Hp <= 0)
+        {
+            Dead();
+        }
     }
 
     private void ActiveAnimEnemyStateSecond()
@@ -104,8 +110,16 @@ public class EnemyHpBarAndStamina : MonoBehaviour, IHpBarAndStaminaForEnemy
         EnemyStamina.fillAmount = CurrentStamin * 0.01f;
     }
 
+    public void StealStaminKickLeg()
+    {
+        CurrentStamin -= 25;
+        EnemyStamina.fillAmount = CurrentStamin * 0.01f;
+    }
+
     public void Dead()
     {
+        animator.SetBool("DieEnemy", true);
+        Audio[0].Play();
 
     }
 
@@ -128,6 +142,4 @@ public class EnemyHpBarAndStamina : MonoBehaviour, IHpBarAndStaminaForEnemy
         CurrentStamin += time;
         EnemyStamina.fillAmount = CurrentStamin * 0.01f;
     }
-
-    
 }

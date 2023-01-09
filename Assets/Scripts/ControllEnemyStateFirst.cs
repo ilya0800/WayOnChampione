@@ -9,9 +9,17 @@ public class ControllEnemyStateFirst : MonoBehaviour
     public GameObject Player;
     private Animator animator;
     private float DistanceBetweenEnemyAndPlayer;
+    private int RandomNuberForActiveKickLeg;
     private bool PermissionDefultAttack = true;
     private bool PermissionSecondAttack = true;
+    private bool PermissionKickLeg = true;
+    private bool KickLeg = true;
+    private const int ConstNumberForActiveKickLeg = 5;
     public GameObject Enemy;
+    private Rigidbody2D rigidbody2D;
+    [SerializeField] AudioSource[] Sounds = new AudioSource[3];
+    private RaycastHit2D raycast;
+    
 
     private void Awake()
     {
@@ -20,6 +28,7 @@ public class ControllEnemyStateFirst : MonoBehaviour
     
     private void Start()
     {
+        rigidbody2D = GetComponentInParent<Rigidbody2D>();
         animator = GetComponentInParent<Animator>();
     }
 
@@ -28,14 +37,27 @@ public class ControllEnemyStateFirst : MonoBehaviour
         MoveToPlayer();
         DefultAttackOnPlayer();
         SecondAttack();
+        KickLegEnemy();
+
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if (collision.collider.CompareTag("Player") && !EnemyHpBarAndStamina.instance.ActivelyStateEnemy)
+        {
             HpBarAndStaminaPlayer.instance.HpDamageDefultAttack();
+            Sounds[0].Play();
+        }
         else if (collision.collider.CompareTag("Player") && EnemyHpBarAndStamina.instance.ActivelyStateEnemy)
             HpBarAndStaminaPlayer.instance.HpDamageSecondAttack();
+        
+        if (collision.collider.CompareTag("Player") && KickLeg)
+        {
+            //collision.gameObject.GetComponent<Rigidbody2D>().AddForce(new Vector2(-1, 0), ForceMode2D.Force);
+            HpBarAndStaminaPlayer.instance.HpDamageOfKickLeg();
+            KickLeg = false;
+            Sounds[2].Play();
+        }
     }
 
     private void MoveToPlayer()
@@ -54,6 +76,7 @@ public class ControllEnemyStateFirst : MonoBehaviour
             PermissionDefultAttack = false;
             GetComponentInParent<EnemyHpBarAndStamina>().StealStaminDefoultAttack();
             StartCoroutine(CheckKdDefultAttack());
+            FindPlayer();
         }
     }
 
@@ -76,6 +99,9 @@ public class ControllEnemyStateFirst : MonoBehaviour
             GetComponentInParent<EnemyHpBarAndStamina>().StealStaminSecondAttack();
             StartCoroutine(CheckKdSecondAttack());
             Debug.Log("SecondAttack");
+            FindPlayer();
+            Sounds[0].Play();
+
         }
     }
     
@@ -86,23 +112,60 @@ public class ControllEnemyStateFirst : MonoBehaviour
         yield return new WaitForSeconds(2);
         PermissionSecondAttack = true;
     }
-}
 
-public class ControllEnemyStateSecond: MonoBehaviour
-{
-    Animator animator;
-    private void Start()
+    private void KickLegEnemy()
     {
-        animator = GetComponentInParent<Animator>();
+        RandomNuberForActiveKickLeg = Random.Range(0, 6);
+        if (DistanceBetweenEnemyAndPlayer <= 2.50 && RandomNuberForActiveKickLeg == ConstNumberForActiveKickLeg && PermissionKickLeg)
+        {
+            animator.SetBool("KickLeg", true);
+            animator.SetBool("IdleFirst", false);
+            PermissionKickLeg = false;
+            StartCoroutine(KickLegCoolDown());
+            GetComponentInParent<EnemyHpBarAndStamina>().StealStaminKickLeg();
+        }
+        else if (DistanceBetweenEnemyAndPlayer <= 2.50 && RandomNuberForActiveKickLeg == ConstNumberForActiveKickLeg && PermissionDefultAttack &&
+            EnemyHpBarAndStamina.instance.ActivelyStateEnemy)
+        {
+            animator.SetBool("KickLegWithTwoSwords", true);
+            animator.SetBool("IdleStateSecond", false);
+            PermissionKickLeg = false;
+            StartCoroutine(KicklegWithTwoSwordsCoolDown());
+            GetComponentInParent<EnemyHpBarAndStamina>().StealStaminKickLeg();
+            Debug.LogWarning("Done");
+            Sounds[2].Play();
+        }
     }
 
-    private void Update()
+    IEnumerator KickLegCoolDown()
     {
-
+        KickLeg = false;
+        RandomNuberForActiveKickLeg = 3;
+        yield return new WaitForSeconds(2);
+        animator.SetBool("KickLeg", false);
+        animator.SetBool("IdleFirst", true);
+        yield return new WaitForSeconds(4);
+        PermissionKickLeg = true;
+        KickLeg = true;
     }
 
-    private void TransitionEnemyStateSecond()
+    IEnumerator KicklegWithTwoSwordsCoolDown()
     {
+        KickLeg = false;
+        RandomNuberForActiveKickLeg = 3;
+        yield return new WaitForSeconds(2);
+        animator.SetBool("KicklegWithTwoSwords", false);
+        animator.SetBool("IdleStateSecond", true);
+        yield return new WaitForSeconds(4);
+        PermissionKickLeg = true;
+        KickLeg = true;
+    }
 
+    private void FindPlayer()
+    {
+      raycast = Physics2D.Raycast(gameObject.transform.position, Vector2.left, 3f);
+        if (raycast.collider == null)
+            Sounds[1].Play();
+        Debug.Log(1);
     }
 }

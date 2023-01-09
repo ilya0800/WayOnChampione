@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class HpBarAndStaminaPlayer : MonoBehaviour, IHpBarAndStaminaForPlayer
 {
     public static HpBarAndStaminaPlayer instance = null;
-    float time = 0f;
+    private float time = 0f;
     [Header("Hp")]
     public float Hp = 100;
     [SerializeField] Image FullHp;
@@ -15,6 +15,9 @@ public class HpBarAndStaminaPlayer : MonoBehaviour, IHpBarAndStaminaForPlayer
     [SerializeField] float FullStamina = 100; 
     private float CurrentStamina;
     public bool PermissionUseStamin;
+    private Animator animator;
+    [SerializeField] AudioSource Audio;
+    [SerializeField] GameObject PanelDead;
 
     private void Start()
     {
@@ -27,18 +30,21 @@ public class HpBarAndStaminaPlayer : MonoBehaviour, IHpBarAndStaminaForPlayer
             Destroy(gameObject);
         }
         CurrentStamina = FullStamina;
+        animator = GetComponent<Animator>();
     }
 
     void Update()
     {
         GetStamin();
         CheckStamina();
+        CheckHp();
     }
 
     public void CheckHp()
     {
-       if(Hp <= 0)
-            Dead();
+        if (Hp <= 0)
+           Dead();
+        
     }
 
     public void CheckStamina()
@@ -62,14 +68,29 @@ public class HpBarAndStaminaPlayer : MonoBehaviour, IHpBarAndStaminaForPlayer
         FullHp.fillAmount = Hp * 0.01f;
     }
 
+    public void HpDamageOfKickLeg()
+    {
+        Hp -= 10;
+        FullHp.fillAmount = Hp * 0.01f;
+    }
+
     public void StealStaminDefoultAttack()
     {
         CurrentStamina -= 20;
         PlayerStamina.fillAmount = CurrentStamina * 0.01f;
     }
+
+    public void StealStaminActivShelder()
+    {
+        CurrentStamina -= 10;
+        PlayerStamina.fillAmount = CurrentStamina * 0.01f;
+    }
+
     public void Dead()
     {
-
+        animator.SetBool("DiePlayer", true);
+        Audio.Play();
+        PanelDead.SetActive(true);
     }
 
     public void GetStamin()
@@ -92,11 +113,5 @@ public class HpBarAndStaminaPlayer : MonoBehaviour, IHpBarAndStaminaForPlayer
         }
         CurrentStamina += time;
         PlayerStamina.fillAmount = CurrentStamina * 0.01f;  
-    }
-
-    public void StealStaminActivShelder()
-    {
-        CurrentStamina -= 10;
-        PlayerStamina.fillAmount = CurrentStamina * 0.01f;
     }
 }
